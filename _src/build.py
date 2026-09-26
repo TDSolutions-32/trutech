@@ -50,6 +50,8 @@ ICONS = {
   "cart": '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.5 12h11.5l2-8H6.2"/>',
   "cap": '<path d="m2 9 10-5 10 5-10 5L2 9Z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/>',
   "check": '<path d="M5 12l5 5L20 7"/>',
+  "compass": '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
+  "calendar": '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
   "access": '<circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5 12 10l7-1.5M12 10v5l-3 6M12 15l3 6"/>',
 }
 
@@ -63,6 +65,7 @@ NAV = [
     ("home", "index.html", "Home"),
     ("solutions", "solutions.html", "Solutions"),
     ("work", "work.html", "Work"),
+    ("consulting", "consulting.html", "Consulting"),
     ("about", "about.html", "About"),
     ("gov", "government.html", "Gov Contracting"),
     ("contact", "contact.html", "Contact"),
@@ -171,6 +174,7 @@ def footer():
           <li><a href="solutions.html">Solutions</a></li>
           <li><a href="solutions.html#plans">Plans &amp; pricing</a></li>
           <li><a href="solutions.html#care">Website care plans</a></li>
+          <li><a href="consulting.html">Consulting &amp; retainer</a></li>
           <li><a href="work.html">Case studies</a></li>
           <li><a href="about.html">About us</a></li>
           <li><a href="government.html">Government contracting</a></li>

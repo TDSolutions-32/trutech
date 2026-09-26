@@ -201,10 +201,10 @@ def footer():
     <div class="foot-bottom">
       <span>© <span data-year>2026</span> Truly Digital Solutions, LLC. All rights reserved.</span>
       <nav aria-label="Legal">
-        <a href="https://trutech.us/privacy-policy">Privacy</a>
-        <a href="https://trutech.us/terms-and-conditions">Terms</a>
-        <a href="https://trutech.us/return-policy">Returns</a>
-        <a href="https://trutech.us/accessibility">Accessibility</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="returns.html">Refunds</a>
+        <a href="accessibility.html">Accessibility</a>
       </nav>
     </div>
   </div>

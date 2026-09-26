@@ -7,9 +7,13 @@ Tokens inside page files:
   {{cta}}         shared call-to-action band
   {{arrow}}       button arrow glyph
 """
-import pathlib, re
+import hashlib, pathlib, re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+def ver(name):
+    """Short content hash so browsers fetch fresh CSS/JS after every deploy."""
+    return hashlib.sha1((ROOT / name).read_bytes()).hexdigest()[:8]
 PAGES = ROOT / "_src" / "pages"
 
 PHONE = "(561) 971-9512"
@@ -83,7 +87,7 @@ def head(title, desc, page):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v={ver('styles.css')}">
 <script type="application/ld+json">
 {{"@context":"https://schema.org","@type":"ProfessionalService","name":"Truly Digital Solutions, LLC","alternateName":"TruTech","url":"https://trutech.us","logo":"https://trutech.us/assets/logo.webp","email":"{EMAIL}","telephone":"+1-561-971-9512","address":{{"@type":"PostalAddress","addressLocality":"Jacksonville","addressRegion":"NC","postalCode":"28546","addressCountry":"US"}},"areaServed":"United States","sameAs":["{FB}"],
 "openingHoursSpecification":[{{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Wednesday"],"opens":"10:00","closes":"17:00"}}]}}
@@ -202,7 +206,7 @@ def footer():
   </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-<script src="main.js" defer></script>
+<script src="main.js?v={ver('main.js')}" defer></script>
 </body>
 </html>
 """

@@ -435,6 +435,7 @@
   .svc:hover { padding-inline: 1.2rem; }
   .svc h3 { font-size: clamp(1.35rem, 2.3vw, 2rem); letter-spacing: -.035em; }
   .svc p { color: var(--fg-soft); font-size: .98rem; }
+  .svc .num small { display: block; margin-top: .35rem; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
   .svc .go {
     display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line);
     transition: background .4s, color .4s, transform .5s var(--ease);
@@ -872,6 +873,7 @@
     .svc p { grid-column: 2 / 3; grid-row: 2; }
     .svc .go { grid-column: 3; grid-row: 1; width: 2.6rem; height: 2.6rem; }
     .svc:hover { padding-inline: 0; }
+    .svc .num small { white-space: normal; font-size: .6rem; }
     .process, .faq, .about-intro, .explain, .sam, .contact-grid, .cs-cols { grid-template-columns: 1fr; }
     .process-sticky, .explain > .stack, .sam > .stack { position: static; }
     .prices, .prices.two, .plans, .help-grid, .care-extra { grid-template-columns: 1fr; }

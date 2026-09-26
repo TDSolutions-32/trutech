@@ -58,7 +58,17 @@
 
   /* ---------- Page transition ---------- */
   if (doc.classList.contains('entering')) {
-    requestAnimationFrame(() => requestAnimationFrame(() => { doc.classList.remove('entering'); $('.wipe') && ($('.wipe').style.clipPath = 'inset(100% 0 0 0)'); setTimeout(() => $('.wipe') && ($('.wipe').style.clipPath = ''), 700); }));
+    // rAF is paused in background tabs, so a timer backs it up and the overlay always clears
+    let done = false;
+    const uncover = () => {
+      if (done) return; done = true;
+      doc.classList.remove('entering');
+      const w = $('.wipe'); if (!w) return;
+      w.style.clipPath = 'inset(100% 0 0 0)';
+      setTimeout(() => (w.style.clipPath = ''), 700);
+    };
+    requestAnimationFrame(() => requestAnimationFrame(uncover));
+    setTimeout(uncover, 300);
   }
   addEventListener('pageshow', e => { if (e.persisted) doc.classList.remove('leaving', 'entering'); });
   if (!reduce) {

@@ -7,7 +7,7 @@ Tokens inside page files:
   {{cta}}         shared call-to-action band
   {{arrow}}       button arrow glyph
 """
-import hashlib, pathlib, re
+import hashlib, json, pathlib, re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -66,8 +66,9 @@ NAV = [
     ("solutions", "solutions.html", "Solutions"),
     ("work", "work.html", "Work"),
     ("consulting", "consulting.html", "Consulting"),
+    ("shop", "shop.html", "Shop"),
     ("about", "about.html", "About"),
-    ("gov", "government.html", "Gov Contracting"),
+    ("gov", "government.html", "Government"),
     ("contact", "contact.html", "Contact"),
 ]
 
@@ -173,6 +174,7 @@ def footer():
         <ul>
           <li><a href="solutions.html">Solutions</a></li>
           <li><a href="solutions.html#plans">Plans &amp; pricing</a></li>
+          <li><a href="shop.html">Shop</a></li>
           <li><a href="solutions.html#care">Website care plans</a></li>
           <li><a href="consulting.html">Consulting &amp; retainer</a></li>
           <li><a href="work.html">Case studies</a></li>
@@ -215,6 +217,16 @@ def footer():
 </html>
 """
 
+SHOP_NEED = {"capstmt": "Government", "govpack": "Government", "seccheck": "IT &amp; Security", "kit": "Consulting", "program": "Consulting"}
+
+def buy_button(key):
+    links = json.loads((ROOT / "_src" / "shop-links.json").read_text())
+    url = (links.get(key) or "").strip()
+    if url:
+        return f'<a class="btn" href="{url}" rel="noopener" data-magnetic>Buy now {ARROW}</a>'
+    need = SHOP_NEED.get(key, "Consulting").replace("&amp;", "%26").replace(" ", "%20")
+    return f'<a class="btn ghost" href="contact.html?need={need}">Request to buy {ARROW}</a>'
+
 def build():
     for src in sorted(PAGES.glob("*.html")):
         raw = src.read_text()
@@ -224,6 +236,7 @@ def build():
         body = body.replace("{{cta}}", CTA).replace("{{arrow}}", ARROW)
         body = body.replace("{{phone}}", PHONE).replace("{{tel}}", TEL).replace("{{email}}", EMAIL)
         body = re.sub(r"\{\{icon:([\w-]+)\}\}", lambda mm: icon(mm.group(1)), body)
+        body = re.sub(r"\{\{buy:(\w+)\}\}", lambda mm: buy_button(mm.group(1)), body)
         out = head(title, desc, nav) + header(nav) + '<main id="main">\n' + body + "</main>\n" + footer()
         (ROOT / src.name).write_text(out)
         print("built", src.name)

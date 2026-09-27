@@ -1,8 +1,8 @@
 {
   "_help": "Paste each product's checkout link (Stripe Payment Link or Lemon Squeezy checkout URL) between the quotes, then run: python3 _src/build.py. Empty links show a 'Request to buy' button that goes to the contact form.",
-  "capstmt": "",
-  "govpack": "",
-  "seccheck": "",
+  "capstmt": "https://buy.stripe.com/4gM8wO4Rd4Pgbeu7In4gg00",
+  "govpack": "https://buy.stripe.com/4gMeVcgzV6Xo4Q67In4gg01",
+  "seccheck": "https://buy.stripe.com/7sY4gy2J52H85Uad2H4gg02",
   "kit": "",
-  "program": ""
+  "program": "https://buy.stripe.com/7sYbJ05VhgxYeqG2o34gg03"
 }

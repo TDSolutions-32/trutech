@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Patch &amp; Byte: Haunted Network · TruTech Halloween Game</title>
+<meta name="description" content="Help Patch and Byte save the network from ghosts, witches and runaway pumpkins. Beat the game to win up to 20% off TD Solutions / TruTech services.">
+<meta property="og:title" content="Patch &amp; Byte: Haunted Network">
+<meta property="og:description" content="Play TruTech's Halloween mini game and win up to 20% off.">
+<meta property="og:image" content="https://trutech.us/assets/halloween-og.jpg">
+<meta property="og:url" content="https://trutech.us/halloween.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121418;--panel:#1c1f25;--char:#2b2f33;--teal:#30cac9;--deep:#0e8c8e;--orange:#e8833a;--gold:#f2c14e;--text:#eef2f4;--muted:#a9b2bc;--line:#2f353d}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--teal)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1000px;margin:0 auto;padding:14px 16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700;letter-spacing:.5px}
+.brand img{width:34px;height:auto}
+.brand span small{display:block;font-weight:400;color:var(--muted);font-size:12px;letter-spacing:0}
+.top .back{font-size:14px;text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:6px;color:var(--text)}
+main{max-width:1000px;margin:0 auto;padding:0 16px 40px}
+h1{font-family:"Press Start 2P",monospace;font-size:clamp(15px,3.2vw,24px);line-height:1.5;margin:6px 0 4px;color:var(--gold);text-shadow:0 3px 0 #7a3b12}
+.lead{margin:0 0 16px;color:var(--muted);font-size:16px;line-height:1.5}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:#0b0f1e;border:3px solid var(--char);border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #000,0 18px 40px rgba(0,0,0,.5);touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:4%;background:rgba(8,10,20,.82);backdrop-filter:blur(2px)}
+.overlay.show{display:flex}
+.card{display:flex;gap:4%;align-items:center;width:100%;max-width:820px}
+.card img{width:34%;max-width:260px;border-radius:10px;border:2px solid var(--deep);flex-shrink:0}
+.card .body{flex:1;min-width:0}
+.pix{font-family:"Press Start 2P",monospace}
+.ov-title{font-size:clamp(10px,2.4vw,20px);line-height:1.5;color:var(--gold);margin:0 0 .6em}
+.ov-text{font-size:clamp(12px,1.8vw,16px);line-height:1.45;margin:0 0 .8em;color:var(--text)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:0 0 1em;font-size:clamp(11px,1.6vw,14px);color:var(--muted)}
+.legend b{color:var(--text)}
+.btn{font-family:"Press Start 2P",monospace;font-size:clamp(10px,1.6vw,13px);border:0;border-radius:6px;padding:14px 18px;min-height:44px;cursor:pointer;background:var(--orange);color:#1a0d04;box-shadow:0 4px 0 #8a4413;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #8a4413}
+.btn.teal{background:var(--teal);color:#062b2b;box-shadow:0 4px 0 var(--deep)}
+.btn.ghost{background:transparent;color:var(--text);border:2px solid var(--line);box-shadow:none}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.roll{font-size:clamp(28px,7vw,64px);color:var(--teal);margin:.15em 0 .25em;text-shadow:0 4px 0 #063f40}
+.code{display:inline-flex;align-items:center;gap:10px;background:#0b0f1e;border:2px dashed var(--gold);border-radius:8px;padding:10px 14px;font-size:clamp(12px,2vw,18px);color:var(--gold);margin-bottom:.9em}
+.fine{font-size:12px;color:var(--muted);line-height:1.45;margin:.6em 0 0}
+.hidden{display:none!important}
+.hud-btn{position:absolute;top:8px;right:8px;z-index:3;font-size:11px;padding:8px 10px;min-height:36px;background:rgba(0,0,0,.45);color:var(--text);border:1px solid var(--line);border-radius:6px;cursor:pointer;font-family:"Press Start 2P",monospace}
+.pad{display:none;grid-template-columns:1fr 1fr 1.3fr;gap:10px;margin-top:12px}
+.pad button{font-family:"Press Start 2P",monospace;font-size:14px;min-height:64px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--text);touch-action:none;-webkit-user-select:none;user-select:none}
+.pad button.zap{background:var(--deep);border-color:var(--teal);color:#fff}
+.pad button.on{background:#2a3038}
+.pad button.zap.on{background:var(--teal);color:#062b2b}
+body.touch .pad{display:grid}
+.tch{display:none}
+body.touch .tch{display:inline}
+body.touch .kbd{display:none}
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+.info div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:15px;line-height:1.45;color:var(--muted)}
+.info h2{font-size:15px;margin:0 0 6px;color:var(--text)}
+.terms{margin-top:18px;font-size:13px;color:var(--muted);line-height:1.5}
+@media (max-width:700px){
+  .card{flex-direction:column;text-align:center}
+  .card img{display:none}
+  .legend{text-align:left}
+  .row{justify-content:center}
+  .info{grid-template-columns:1fr}
+  .stage.menu{aspect-ratio:3/4}
+  canvas{object-fit:contain}
+  .overlay{padding:40px 14px 14px;align-items:center;overflow:auto}
+  .legend{margin-bottom:1.2em}
+  .hud-btn{top:4px;right:4px;font-size:8px;padding:6px 8px;min-height:28px}
+  .roll{margin:.1em 0}
+  .ov-text{font-size:12px}
+  .legend{font-size:11px;gap:3px 10px}
+  .btn{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><img src="assets/logo-sm.webp" alt=""><span>TD Solutions / TruTech<small>Jacksonville, NC</small></span></a>
+  <a class="back" href="index.html">Back to trutech.us</a>
+</header>
+<main>
+  <h1>Patch &amp; Byte: Haunted Network</h1>
+  <p class="lead">Ghosts got into the network. Help Patch zap them, catch the pumpkins and dodge the witch's potions. Score 500 points before the clock runs out to win up to 20% off.</p>
+
+  <div class="stage menu" id="stage">
+    <canvas id="game" width="320" height="180" aria-label="Halloween game: Patch catches pumpkins and zaps ghosts"></canvas>
+    <button class="hud-btn" id="mute" type="button" aria-label="Sound on or off">SOUND ON</button>
+
+    <div class="overlay show" id="ovTitle">
+      <div class="card">
+        <img src="assets/halloween-patch.webp" alt="Patch aiming his teal scanner at a pixel bug">
+        <div class="body">
+          <p class="ov-title pix">Save the network!</p>
+          <p class="ov-text">Score <b>500 points</b> in <b>90 seconds</b> to win a TruTech discount. You have 3 lives.</p>
+          <div class="legend">
+            <span><b>Pumpkin</b> +10 (gold +50)</span>
+            <span><b>Zap a ghost</b> +25</span>
+            <span><b>Zap the witch 3x</b> +100</span>
+            <span><b>Byte's shield</b> blocks hits</span>
+            <span class="kbd"><b>Move:</b> arrow keys or A / D</span>
+            <span class="kbd"><b>Zap:</b> Space or up arrow</span>
+            <span class="tch"><b>Move</b> with the arrows below the game</span>
+            <span class="tch"><b>Zap</b> with the ZAP button</span>
+          </div>
+          <div class="row"><button class="btn" id="btnStart" type="button">Start game</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovOver">
+      <div class="card">
+        <img src="assets/halloween-patch.webp" alt="">
+        <div class="body">
+          <p class="ov-title pix" id="overTitle">The ghosts got in!</p>
+          <p class="ov-text" id="overText">You scored 0. You need 500 to win.</p>
+          <div class="row"><button class="btn" id="btnRetry" type="button">Try again</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovWin">
+      <div class="card">
+        <img src="assets/halloween-byte.webp" alt="Byte the owl guarding the server rack">
+        <div class="body">
+          <p class="ov-title pix">Network saved!</p>
+          <p class="ov-text" id="winText">Byte is cracking your prize code...</p>
+          <div class="roll pix" id="roll">??%</div>
+          <div id="claim" class="hidden">
+            <div class="code pix"><span id="code">PATCH10</span></div>
+            <div class="row">
+              <a class="btn teal" id="mail" href="#">Claim by email</a>
+              <button class="btn ghost" id="copy" type="button">Copy code</button>
+              <button class="btn ghost" id="again" type="button">Play again</button>
+            </div>
+            <p class="fine">Send us the code to lock in your discount. Valid on any TD Solutions / TruTech service booked by Nov 30, 2026. One discount per business.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pad" id="pad" aria-label="Touch controls">
+    <button type="button" data-k="left" aria-label="Move left">&#9664;</button>
+    <button type="button" data-k="right" aria-label="Move right">&#9654;</button>
+    <button type="button" data-k="zap" class="zap" aria-label="Zap">ZAP</button>
+  </div>
+
+  <section class="info">
+    <div><h2>Who are Patch &amp; Byte?</h2>Patch is our glitch hunter: he finds the bugs and fixes them. Byte is his owl sidekick who watches your network and backups at night.</div>
+    <div><h2>What can I use the discount on?</h2>Websites, care plans, IT and security checkups, managed IT, social media and ads. See all <a href="solutions.html">services and prices</a>.</div>
+    <div><h2>Questions?</h2>Email <a href="mailto:TDSolutions@trutech.us">TDSolutions@trutech.us</a> or call <a href="tel:+15619719512">(561) 971-9512</a>.</div>
+  </section>
+  <p class="terms">Discount codes are good for one use per business on services booked by November 30, 2026, and can't be combined with other offers or applied to past invoices. TD Solutions / TruTech, Jacksonville, NC.</p>
+</main>
+
+<script>
+(()=>{
+'use strict';
+const PAL={"K": "#16181c", "O": "#e8833a", "o": "#b9581f", "L": "#ffb98a", "P": "#f6a88a", "Y": "#f2c14e", "W": "#ffffff", "H": "#2b2f33", "h": "#3a4048", "T": "#30cac9", "t": "#0e8c8e", "G": "#9aa3ad", "g": "#5f6873", "S": "#d6dde3", "F": "#f2a33a", "B": "#f28c28", "b": "#c4621f", "k": "#3d7a2a", "N": "#1e1a24", "V": "#6a2fa0", "v": "#4a1f73", "u": "#8b5a2b", "s": "#d9a441", "Q": "#39e07f", "q": "#b6ffd2", "R": "#e63946", "w": "#c9d6e0"};
+const SP={
+"patch": [
+"........................",
+"..........KKKK..........",
+"........KKOOOOKK........",
+"KKK....KOoOOOOoOK....KKK",
+"KLLKK..KOOOoOOOOK..KKLLK",
+".KPPLLLKOOOOOOOOKLLLPPK.",
+"..KKPPLLOKKOOKKOLLPPKK..",
+"....KKKKOWYOOWYOKKKK....",
+".......KOYKOOYKOK.......",
+".......KOOOooOOOK.......",
+".......KOKKKKWKOK.......",
+"........KOOOOOOK........",
+".......KHHTHHTHHK.......",
+"......KHHHTHHTHHHK......",
+".....KOHHtTTTTtHHOK.....",
+".....KOHHHtSStHHHOK.....",
+"......KhHHHttHHHhK......",
+".......KHHHKKHHHK.......",
+".......KHHK..KHHK.......",
+"......KTWWK..KWWTK......",
+"......KKKKK..KKKKK......"
+],
+"byte": [
+".K........K.",
+".KgK....KgK.",
+"..KtTTTTtK..",
+".KGWWGGWWGK.",
+".KWTTWWTTWK.",
+".KWTKWWKTWK.",
+"tKGGGYYGGGKt",
+".KgGGGGGGgK.",
+".KgGSSSSGgK.",
+"..KgSSSSgK..",
+"...KKKKKK...",
+"...FF..FF..."
+],
+"pumpkin": [
+"....kk....",
+".KKKkkKKK.",
+"KBbBBBBbBK",
+"KBYYbBYYBK",
+"KBbBBBBbBK",
+"KBYYYYYYBK",
+"KBbYBBYbBK",
+".KKKKKKKK."
+],
+"ghost": [
+"...KKKKKK...",
+"..KWWWWWWK..",
+".KWWWWWWWWK.",
+".KWKKWWKKWK.",
+".KWKKWWKKWK.",
+".KWWWWWWWWK.",
+".KWWWKKWWWK.",
+".KWWWKKWWWK.",
+".KWWWWWWWWK.",
+".KWwWWWWwWK.",
+".KWWKWWKWWK.",
+".KK..KK..KK."
+],
+"witch": [
+".....K..............",
+"....KNK.............",
+"...KNNNK............",
+"..KNNVVNK...........",
+"KKNNNNNNNKK.........",
+"...KQQQQK...........",
+"...KQYQQK...........",
+"..KQQQQK............",
+"...KVVVVK...........",
+"..KVVvVVVK..........",
+"uuuuuuuuuuuuuuusssss",
+"..KVVVVVK.....ssss..",
+"...KK.KK............"
+],
+"potion": [
+"..KK..",
+"..KK..",
+".KQQK.",
+"KQqQQK",
+"KQQQqK",
+"KQQQQK",
+".KKKK."
+],
+"heart": [
+".RR.RR.",
+"RWRRRRR",
+"RRRRRRR",
+".RRRRR.",
+"..RRR..",
+"...R..."
+],
+"shield": [
+"..KKKKK..",
+".KTTTTTK.",
+"KTSSSSSTK",
+"KTTTSTTTK",
+"KTTTSTTTK",
+"KTTTSTTTK",
+".KTTSTTK.",
+"..KTTTK..",
+"...KTK...",
+"....K...."
+]
+};
+const W=320,H=180,GROUND=166,GOAL=500,TIME=90;
+const REWARDS=[{pct:5,code:'PATCH05',w:50},{pct:10,code:'PATCH10',w:30},{pct:15,code:'PATCH15',w:15},{pct:20,code:'BYTE20',w:5}];
+const cvs=document.getElementById('game'),ctx=cvs.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const FONT='"Press Start 2P", monospace';
+
+if(matchMedia('(pointer: coarse)').matches) document.body.classList.add('touch');
+
+/* ---------- sprites ---------- */
+function mk(rows,swap){
+  const c=document.createElement('canvas');c.width=rows[0].length;c.height=rows.length;
+  const x=c.getContext('2d');
+  rows.forEach((r,j)=>{for(let i=0;i<r.length;i++){const ch=r[i];if(ch==='.')continue;
+    x.fillStyle=(swap&&swap[ch])||PAL[ch]||'#f0f';x.fillRect(i,j,1,1);}});
+  return c;
+}
+function flip(src){const c=document.createElement('canvas');c.width=src.width;c.height=src.height;
+  const x=c.getContext('2d');x.translate(src.width,0);x.scale(-1,1);x.drawImage(src,0,0);return c;}
+const IMG={};
+for(const k in SP) IMG[k]=mk(SP[k]);
+IMG.gold=mk(SP.pumpkin,{B:'#ffd34d',b:'#d9a21b',Y:'#fff6c9'});
+IMG.witchR=flip(IMG.witch);
+const byteFlap=SP.byte.slice();byteFlap[7]='gKgGGGGGGgKg';byteFlap[8]='gKgGSSSSGgKg';
+IMG.byte2=mk(byteFlap);
+const patchStep=SP.patch.slice();
+patchStep[18]='.......KHHK...KHHK......';patchStep[19]='......KTWWK...KWWTK.....';patchStep[20]='......KKKKK...KKKKK.....';
+IMG.patch2=mk(patchStep);
+
+/* ---------- background ---------- */
+function makeBG(){
+  const c=document.createElement('canvas');c.width=W;c.height=H;const b=c.getContext('2d');
+  const gr=b.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#070a18');gr.addColorStop(.55,'#1b1638');gr.addColorStop(1,'#33204a');
+  b.fillStyle=gr;b.fillRect(0,0,W,H);
+  let s=11;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+  for(let i=0;i<90;i++){b.globalAlpha=.35+r()*.65;b.fillStyle=r()<.18?'#30cac9':'#d9e2ff';b.fillRect((r()*W)|0,(r()*110)|0,1,1);}
+  b.globalAlpha=1;
+  // moon + glow
+  const mx=268,my=34;
+  for(let rr=30;rr>16;rr-=2){b.globalAlpha=.035;b.fillStyle='#ffe9a8';circ(b,mx,my,rr);}
+  b.globalAlpha=1;b.fillStyle='#f6e7b4';circ(b,mx,my,15);
+  b.fillStyle='#e1cd90';circ(b,mx-5,my-4,3);circ(b,mx+4,my+5,2);circ(b,mx+6,my-6,1.5);
+  // far hills
+  b.fillStyle='#211a3d';
+  for(let x=0;x<W;x++){const h=124+7*Math.sin(x/27)+4*Math.sin(x/11+1);b.fillRect(x,h|0,1,H);}
+  // haunted house on the hill
+  b.fillStyle='#140f26';
+  b.fillRect(36,96,40,30);b.fillRect(60,84,14,14);
+  tri(b,32,97,80,97,56,78);tri(b,58,85,76,85,67,72);
+  b.fillRect(46,70,3,10);
+  b.fillStyle='#f2c14e';[[42,104],[52,104],[64,90],[64,104],[42,114]].forEach(([x,y])=>b.fillRect(x,y,4,4));
+  b.fillStyle='#30cac9';b.fillRect(52,114,4,4);
+  // near hills
+  b.fillStyle='#2a1f45';
+  for(let x=0;x<W;x++){const h=142+5*Math.sin(x/19+2)+3*Math.sin(x/7);b.fillRect(x,h|0,1,H);}
+  // dead trees
+  tree(b,14,GROUND,26);tree(b,300,GROUND,30);tree(b,222,GROUND-2,18);
+  // fence
+  b.fillStyle='#1a1428';
+  for(let x=100;x<200;x+=6){b.fillRect(x,GROUND-14,2,14);b.fillRect(x,GROUND-15,2,1);}
+  b.fillRect(100,GROUND-11,100,1);b.fillRect(100,GROUND-6,100,1);
+  // tombstones
+  [[120,10],[156,12],[248,9],[86,8],[188,10]].forEach(([x,h])=>{
+    b.fillStyle='#16181c';b.fillRect(x-1,GROUND-h-1,10,h+1);
+    b.fillStyle='#596170';b.fillRect(x,GROUND-h,8,h);b.fillStyle='#7d8696';b.fillRect(x,GROUND-h,8,2);
+    b.fillStyle='#3d434e';b.fillRect(x+3,GROUND-h+3,2,4);b.fillRect(x+2,GROUND-h+4,4,1);
+  });
+  // ground
+  b.fillStyle='#2c2040';b.fillRect(0,GROUND,W,H-GROUND);
+  b.fillStyle='#4a3770';b.fillRect(0,GROUND,W,2);
+  b.fillStyle='#22182f';for(let x=0;x<W;x+=4)b.fillRect(x+((x/4)%3),GROUND+5+((x*7)%6),2,1);
+  b.fillStyle='#5e4a8c';for(let x=2;x<W;x+=7)b.fillRect(x,GROUND-1,1,1);
+  return c;
+}
+function circ(b,cx,cy,r){for(let y=-r;y<=r;y++){const w=Math.floor(Math.sqrt(r*r-y*y));b.fillRect(Math.round(cx-w),Math.round(cy+y),w*2+1,1);}}
+function tri(b,x1,y1,x2,y2,x3,y3){b.beginPath();b.moveTo(x1,y1);b.lineTo(x2,y2);b.lineTo(x3,y3);b.closePath();b.fill();}
+function tree(b,x,y,h){b.fillStyle='#120d1e';b.fillRect(x,y-h,3,h);
+  b.fillRect(x-6,y-h+6,7,1);b.fillRect(x-7,y-h+3,1,4);b.fillRect(x+3,y-h+10,8,1);b.fillRect(x+10,y-h+6,1,5);
+  b.fillRect(x-4,y-h+14,5,1);b.fillRect(x+1,y-h-4,1,5);}
+const BG=makeBG();
+
+/* ---------- sound ---------- */
+let AC=null,muted=false;
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();}
+function beep(f,d=.08,type='square',v=.05,f2){if(muted||!AC)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);}
+const SFX={
+  zap:()=>beep(880,.07,'square',.03,1760),
+  pump:()=>{beep(660,.06,'square',.04);setTimeout(()=>beep(990,.08,'square',.04),55);},
+  gold:()=>{[660,880,1100,1320].forEach((f,i)=>setTimeout(()=>beep(f,.07,'square',.04),i*50));},
+  ghost:()=>beep(520,.18,'triangle',.06,130),
+  hurt:()=>beep(200,.3,'sawtooth',.06,60),
+  witch:()=>{[300,250,200,350].forEach((f,i)=>setTimeout(()=>beep(f,.12,'sawtooth',.04),i*90));},
+  shield:()=>{[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.09,'triangle',.05),i*60));},
+  win:()=>{[523,659,784,1046,784,1046,1318].forEach((f,i)=>setTimeout(()=>beep(f,.14,'square',.05),i*110));},
+  lose:()=>{[392,330,262,196].forEach((f,i)=>setTimeout(()=>beep(f,.2,'triangle',.06),i*160));},
+  tick:()=>beep(1200,.03,'square',.03)
+};
+$('mute').addEventListener('click',()=>{muted=!muted;$('mute').textContent=muted?'SOUND OFF':'SOUND ON';});
+
+/* ---------- input ---------- */
+const keys={left:false,right:false,zap:false};
+const KEYMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'zap',ArrowUp:'zap',KeyW:'zap',KeyJ:'zap'};
+addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(!k)return;if(state==='play')e.preventDefault();keys[k]=true;});
+addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keys[k]=false;});
+document.querySelectorAll('.pad button').forEach(btn=>{
+  const k=btn.dataset.k;
+  const on=e=>{e.preventDefault();keys[k]=true;btn.classList.add('on');try{btn.setPointerCapture(e.pointerId);}catch(_){}};
+  const off=()=>{keys[k]=false;btn.classList.remove('on');};
+  btn.addEventListener('pointerdown',on);btn.addEventListener('pointerup',off);btn.addEventListener('pointercancel',off);btn.addEventListener('lostpointercapture',off);
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+});
+addEventListener('blur',()=>{keys.left=keys.right=keys.zap=false;});
+
+/* ---------- game state ---------- */
+let state='title',g=null;
+const BYTE_LINES={
+  start:'Hoo! Catch pumpkins, zap ghosts!',
+  witch:'Witch inbound! Dodge potions!',
+  shield:'Firewall up! You\'re safe.',
+  drop:'Grab my shield, Patch!',
+  low:'Careful, Patch!',
+  half:'Halfway there!',
+  close:'Almost there! Keep going!',
+  gold:'Golden pumpkin! +50!',
+  witchDown:'Witch deleted. Nice!'
+};
+function newGame(){
+  g={t:0,score:0,lives:3,time:TIME,px:W/2,vx:0,face:1,inv:0,shield:0,shake:0,step:0,
+     bolts:[],items:[],ghosts:[],witches:[],potions:[],parts:[],floats:[],bats:[],
+     nextP:.6,nextG:2.5,nextW:9,nextS:16,nextBat:3,cool:0,zapAnim:0,said:{},
+     byte:{x:W/2-30,y:84,msg:'',msgT:0,frame:0}};
+  say('start');
+}
+function say(key,force){if(!force&&g.said[key])return;g.said[key]=true;g.byte.msg=BYTE_LINES[key];g.byte.msgT=2.6;}
+function burst(x,y,cols,n=10,sp=60){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=rand(sp*.3,sp);
+  g.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-20,life:rand(.35,.8),col:cols[i%cols.length]});}}
+function floatText(x,y,text,col='#f2c14e'){g.floats.push({x,y,text,col,life:.9});}
+function hit(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function patchBox(){return{x:g.px-8,y:GROUND-18,w:16,h:18};}
+function hurt(){
+  if(g.inv>0||g.shield>0)return;
+  g.lives--;g.inv=1.6;g.shake=.35;SFX.hurt();burst(g.px,GROUND-10,['#e63946','#ffffff'],12,70);
+  if(g.lives===1)say('low');
+  if(g.lives<=0)endGame(false);
+}
+
+function update(dt){
+  g.t+=dt;g.time-=dt;
+  const d=Math.min(1,g.t/75);
+  if(g.time<=0){g.time=0;endGame(false);return;}
+  // patch
+  const acc=keys.left===keys.right?0:(keys.left?-1:1);
+  if(acc)g.face=acc;
+  g.vx+=acc*900*dt; g.vx*=Math.pow(acc?0.0009:0.00002,dt); g.vx=Math.max(-120,Math.min(120,g.vx));
+  g.px=Math.max(12,Math.min(W-12,g.px+g.vx*dt));
+  if(Math.abs(g.vx)>10)g.step+=dt*8;
+  g.inv=Math.max(0,g.inv-dt);g.shield=Math.max(0,g.shield-dt);g.shake=Math.max(0,g.shake-dt);
+  g.cool-=dt;g.zapAnim=Math.max(0,g.zapAnim-dt);
+  if(keys.zap&&g.cool<=0){g.cool=.24;g.zapAnim=.12;SFX.zap();g.bolts.push({x:g.px+g.face*9,y:GROUND-24,w:2,h:7});}
+  g.bolts.forEach(b=>b.y-=230*dt);g.bolts=g.bolts.filter(b=>b.y>-10&&!b.dead);
+  // spawns
+  if((g.nextP-=dt)<=0){g.nextP=rand(.75,1.1)-d*.35;
+    const gold=Math.random()<.09;g.items.push({type:gold?'gold':'pumpkin',x:rand(8,W-18),y:-10,w:10,h:8,vy:rand(38,58)+d*30,rot:0});}
+  if((g.nextG-=dt)<=0){g.nextG=rand(1.9,2.6)-d*1.1;
+    g.ghosts.push({x:rand(10,W-22),y:-14,w:12,h:12,vy:rand(16,26)+d*16,ph:Math.random()*6,amp:rand(10,26),bx:0});
+    g.ghosts.at(-1).bx=g.ghosts.at(-1).x;}
+  if((g.nextW-=dt)<=0){g.nextW=rand(11,14)-d*3;const fromL=Math.random()<.5;
+    g.witches.push({x:fromL?-24:W+4,y:rand(18,38),w:20,h:13,vx:(fromL?1:-1)*(rand(40,52)+d*14),hp:3,drop:.8,flash:0});
+    say('witch');SFX.witch();}
+  if((g.nextS-=dt)<=0){g.nextS=rand(17,21);g.items.push({type:'shield',x:g.byte.x,y:g.byte.y+8,w:9,h:10,vy:34});say('drop',true);}
+  if((g.nextBat-=dt)<=0){g.nextBat=rand(3,6);const l=Math.random()<.5;g.bats.push({x:l?-6:W+6,y:rand(20,70),vx:(l?1:-1)*rand(30,50),ph:0});}
+  // items
+  for(const it of g.items){it.y+=it.vy*dt;
+    if(hit(it,patchBox())){it.dead=true;
+      if(it.type==='shield'){g.shield=6;SFX.shield();say('shield',true);burst(g.px,GROUND-12,['#30cac9','#d6dde3'],14,60);}
+      else{const v=it.type==='gold'?50:10;g.score+=v;floatText(it.x,it.y,'+'+v,it.type==='gold'?'#fff6c9':'#f2c14e');
+        if(it.type==='gold'){SFX.gold();say('gold',true);}else SFX.pump();
+        burst(it.x+5,it.y+4,it.type==='gold'?['#ffd34d','#fff6c9']:['#f28c28','#f2c14e'],8,50);}}
+    else if(it.y>GROUND-6){it.dead=true;if(it.type!=='shield')burst(it.x+5,GROUND-2,['#c4621f','#f28c28'],6,35);}
+  }
+  g.items=g.items.filter(i=>!i.dead);
+  // ghosts
+  for(const gh of g.ghosts){gh.y+=gh.vy*dt;gh.ph+=dt*2.2;gh.x=gh.bx+Math.sin(gh.ph)*gh.amp;gh.x=Math.max(2,Math.min(W-14,gh.x));
+    for(const b of g.bolts){if(!b.dead&&hit(b,gh)){b.dead=true;gh.dead=true;g.score+=25;floatText(gh.x,gh.y,'+25','#30cac9');SFX.ghost();burst(gh.x+6,gh.y+6,['#ffffff','#c9d6e0','#30cac9'],12,55);break;}}
+    if(!gh.dead&&hit(gh,patchBox())){gh.dead=true;burst(gh.x+6,gh.y+6,['#ffffff','#c9d6e0'],10,45);hurt();}
+    if(gh.y>GROUND)gh.dead=true;}
+  g.ghosts=g.ghosts.filter(x=>!x.dead);
+  // witches
+  for(const w of g.witches){w.x+=w.vx*dt;w.flash=Math.max(0,w.flash-dt);
+    if((w.drop-=dt)<=0&&w.x>4&&w.x<W-24){w.drop=rand(1.1,1.6)-d*.4;g.potions.push({x:w.x+8,y:w.y+12,w:6,h:7,vy:rand(60,75)+d*20});}
+    for(const b of g.bolts){if(!b.dead&&hit(b,w)){b.dead=true;w.hp--;w.flash=.15;beep(300,.05,'square',.04);
+      if(w.hp<=0){w.dead=true;g.score+=100;floatText(w.x,w.y,'+100','#b6ffd2');SFX.witch();say('witchDown',true);
+        burst(w.x+10,w.y+6,['#6a2fa0','#39e07f','#f2c14e'],22,80);
+        for(let i=0;i<3;i++)g.items.push({type:'pumpkin',x:w.x+i*8,y:w.y+8,w:10,h:8,vy:rand(40,55)});}break;}}
+    if(w.x<-40||w.x>W+40)w.dead=true;}
+  g.witches=g.witches.filter(x=>!x.dead);
+  // potions
+  for(const p of g.potions){p.y+=p.vy*dt;
+    for(const b of g.bolts){if(!b.dead&&hit(b,p)){b.dead=true;p.dead=true;g.score+=5;floatText(p.x,p.y,'+5','#b6ffd2');burst(p.x+3,p.y+3,['#39e07f','#b6ffd2'],8,40);break;}}
+    if(!p.dead&&hit(p,patchBox())){p.dead=true;burst(p.x+3,p.y+3,['#39e07f','#b6ffd2'],12,60);hurt();}
+    if(p.y>GROUND-6){p.dead=true;burst(p.x+3,GROUND-2,['#39e07f','#b6ffd2'],8,40);}}
+  g.potions=g.potions.filter(x=>!x.dead);
+  // byte follows patch
+  const tx=g.px+(g.px<W/2?28:-28),ty=78+Math.sin(g.t*2.4)*6;
+  g.byte.x+=(tx-g.byte.x)*Math.min(1,dt*1.8);g.byte.y+=(ty-g.byte.y)*Math.min(1,dt*3);g.byte.msgT-=dt;
+  // fx
+  g.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=160*dt;p.life-=dt;});g.parts=g.parts.filter(p=>p.life>0);
+  g.floats.forEach(f=>{f.y-=22*dt;f.life-=dt;});g.floats=g.floats.filter(f=>f.life>0);
+  g.bats.forEach(b=>{b.x+=b.vx*dt;b.ph+=dt*14;});g.bats=g.bats.filter(b=>b.x>-10&&b.x<W+10);
+  if(g.score>=GOAL/2)say('half');
+  if(g.score>=GOAL*.8)say('close');
+  if(g.score>=GOAL)endGame(true);
+}
+
+/* ---------- draw ---------- */
+function text(s,x,y,col,size=8,align='left'){ctx.font=size+'px '+FONT;ctx.textAlign=align;ctx.textBaseline='top';
+  ctx.fillStyle='#000';ctx.fillText(s,x+1,y+1);ctx.fillStyle=col;ctx.fillText(s,x,y);}
+function draw(){
+  ctx.save();
+  if(g&&g.shake>0)ctx.translate((Math.random()-.5)*4|0,(Math.random()-.5)*4|0);
+  ctx.drawImage(BG,0,0);
+  if(!g){ctx.restore();return;}
+  // bats
+  ctx.fillStyle='#0a0712';
+  g.bats.forEach(b=>{const up=Math.sin(b.ph)>0;const x=b.x|0,y=b.y|0;ctx.fillRect(x-1,y,3,2);
+    if(up){ctx.fillRect(x-4,y-2,3,1);ctx.fillRect(x+2,y-2,3,1);ctx.fillRect(x-2,y-1,1,1);ctx.fillRect(x+2,y-1,1,1);}
+    else{ctx.fillRect(x-4,y+1,3,1);ctx.fillRect(x+2,y+1,3,1);}});
+  // witches
+  g.witches.forEach(w=>{const img=w.vx>0?IMG.witchR:IMG.witch;const bob=Math.sin(g.t*5+w.x*.05)*2;
+    if(w.flash>0){ctx.globalAlpha=.5;}ctx.drawImage(img,w.x|0,(w.y+bob)|0);ctx.globalAlpha=1;
+    for(let i=0;i<w.hp;i++){ctx.fillStyle='#39e07f';ctx.fillRect((w.x+4+i*4)|0,(w.y-4+bob)|0,3,2);}});
+  // items
+  g.items.forEach(it=>{const img=it.type==='gold'?IMG.gold:it.type==='shield'?IMG.shield:IMG.pumpkin;
+    if(it.type==='gold'||it.type==='shield'){ctx.globalAlpha=.25+.15*Math.sin(g.t*10);ctx.fillStyle=it.type==='gold'?'#ffd34d':'#30cac9';
+      ctx.fillRect((it.x-2)|0,(it.y-2)|0,it.w+4,it.h+4);ctx.globalAlpha=1;}
+    ctx.drawImage(img,it.x|0,it.y|0);});
+  // potions
+  g.potions.forEach(p=>ctx.drawImage(IMG.potion,p.x|0,p.y|0));
+  // ghosts
+  g.ghosts.forEach(gh=>{ctx.globalAlpha=.88;ctx.drawImage(IMG.ghost,gh.x|0,gh.y|0);ctx.globalAlpha=1;});
+  // bolts
+  g.bolts.forEach(b=>{ctx.fillStyle='rgba(48,202,201,.35)';ctx.fillRect((b.x-1)|0,(b.y-1)|0,4,9);ctx.fillStyle='#b8fffe';ctx.fillRect(b.x|0,b.y|0,2,7);});
+  // patch
+  const moving=Math.abs(g.vx)>10;const pimg=(moving&&(g.step|0)%2)?IMG.patch2:IMG.patch;
+  const py=GROUND-21-(moving&&((g.step|0)%2)?1:0);
+  if(!(g.inv>0&&((g.t*20)|0)%2)){
+    ctx.drawImage(pimg,(g.px-12)|0,py);
+    // scanner in the facing hand
+    const sx=(g.px+(g.face>0?6:-9))|0,sy=GROUND-9;
+    ctx.fillStyle='#16181c';ctx.fillRect(sx,sy-6,4,8);ctx.fillStyle='#3a4048';ctx.fillRect(sx+1,sy-5,2,6);
+    ctx.fillStyle=g.zapAnim>0?'#ffffff':'#30cac9';ctx.fillRect(sx+1,sy-7,2,2);
+    if(g.zapAnim>0){ctx.fillStyle='rgba(48,202,201,.5)';ctx.fillRect(sx-1,sy-10,6,4);}
+  }
+  if(g.shield>0){const a=g.shield<1.5?(((g.t*12)|0)%2?.2:.6):.55;ctx.strokeStyle='rgba(48,202,201,'+a+')';ctx.lineWidth=1;
+    ctx.beginPath();ctx.ellipse(g.px,GROUND-11,15,14,0,0,Math.PI*2);ctx.stroke();}
+  // byte
+  const bimg=((g.t*8)|0)%2?IMG.byte2:IMG.byte;ctx.drawImage(bimg,(g.byte.x-6)|0,(g.byte.y-6)|0);
+  if(g.byte.msgT>0){ctx.font='6px '+FONT;const msg=g.byte.msg;const tw=Math.ceil(ctx.measureText(msg).width)+8;
+    let bx=Math.round(g.byte.x-tw/2);bx=Math.max(2,Math.min(W-tw-2,bx));const by=Math.round(g.byte.y-22);
+    ctx.fillStyle='#16181c';ctx.fillRect(bx-1,by-1,tw+2,13);ctx.fillStyle='#eef4f7';ctx.fillRect(bx,by,tw,11);
+    ctx.fillRect(Math.round(g.byte.x)-1,by+11,3,2);
+    ctx.fillStyle='#16181c';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(msg,bx+4,by+3);}
+  // fx
+  g.parts.forEach(p=>{ctx.fillStyle=p.col;ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillRect(p.x|0,p.y|0,2,2);});ctx.globalAlpha=1;
+  g.floats.forEach(f=>{ctx.globalAlpha=Math.min(1,f.life*2);text(f.text,f.x|0,f.y|0,f.col,6);});ctx.globalAlpha=1;
+  ctx.restore();
+  // HUD
+  ctx.fillStyle='rgba(8,10,20,.55)';ctx.fillRect(0,0,W,16);
+  text(String(g.score).padStart(3,'0')+'/'+GOAL,5,4,'#f2c14e',8);
+  const bw=70,bx=82;ctx.fillStyle='#16181c';ctx.fillRect(bx,5,bw+2,7);ctx.fillStyle='#30cac9';
+  ctx.fillRect(bx+1,6,Math.round(bw*Math.min(1,g.score/GOAL)),5);
+  const tcol=g.time<15?(((g.t*4)|0)%2?'#e63946':'#ffffff'):'#ffffff';
+  text(Math.ceil(g.time)+'s',196,4,tcol,8,'center');
+  for(let i=0;i<3;i++){ctx.globalAlpha=i<g.lives?1:.2;ctx.drawImage(IMG.heart,226+i*10,5);}ctx.globalAlpha=1;
+}
+
+/* ---------- loop ---------- */
+let last=0,paused=false;
+function frame(ts){
+  const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+  if(state==='play'&&!paused)update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+document.addEventListener('visibilitychange',()=>{paused=document.hidden;});
+
+/* ---------- screens ---------- */
+function show(id){['ovTitle','ovOver','ovWin'].forEach(o=>$(o).classList.toggle('show',o===id));$('stage').classList.toggle('menu',!!id);}
+function start(){audio();newGame();state='play';show(null);cvs.focus&&cvs.focus();}
+$('btnStart').addEventListener('click',start);
+$('btnRetry').addEventListener('click',start);
+$('again').addEventListener('click',start);
+
+function endGame(won){
+  if(state!=='play')return;
+  state=won?'win':'over';keys.left=keys.right=keys.zap=false;
+  if(!won){SFX.lose();
+    $('overTitle').textContent=g.lives<=0?'The ghosts got in!':'Time\'s up!';
+    $('overText').textContent='You scored '+g.score+'. You need '+GOAL+' to win. Patch is ready for another round.';
+    setTimeout(()=>show('ovOver'),500);return;}
+  SFX.win();
+  burst(g.px,GROUND-20,['#30cac9','#f2c14e','#ffffff','#e8833a'],40,120);
+  setTimeout(reward,700);
+}
+function pick(){const total=REWARDS.reduce((s,r)=>s+r.w,0);let n=Math.random()*total;for(const r of REWARDS){if((n-=r.w)<0)return r;}return REWARDS[0];}
+function reward(){
+  show('ovWin');$('claim').classList.add('hidden');
+  $('winText').textContent='You scored '+g.score+'. Byte is cracking your prize code...';
+  const prize=pick();let i=0;const seq=[5,10,15,20];const steps=22;
+  const roll=$('roll');
+  (function spin(){
+    if(i<steps){roll.textContent=seq[i%4]+'% OFF';SFX.tick();i++;setTimeout(spin,50+i*i*.6);return;}
+    roll.textContent=prize.pct+'% OFF';SFX.win();
+    $('winText').textContent='You won '+prize.pct+'% off TD Solutions / TruTech services!';
+    $('code').textContent=prize.code;
+    const body='Hi TD Solutions,\n\nI won '+prize.pct+'% off in the Patch & Byte Halloween game. My code is '+prize.code+'.\n\nMy business name:\nWhat I need help with:\nBest phone number:\n';
+    $('mail').href='mailto:TDSolutions@trutech.us?subject='+encodeURIComponent('Halloween discount: '+prize.code+' ('+prize.pct+'% off)')+'&body='+encodeURIComponent(body);
+    $('claim').classList.remove('hidden');
+  })();
+}
+$('copy').addEventListener('click',()=>{const c=$('code').textContent;
+  const done=()=>{$('copy').textContent='Copied!';setTimeout(()=>$('copy').textContent='Copy code',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(c).then(done,()=>{});else done();});
+
+// title screen preview: draw a calm scene behind the title overlay
+newGame();g.byte.msgT=0;state='title';
+})();
+</script>
+</body>
+</html>
